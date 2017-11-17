@@ -51,5 +51,3 @@ Return a protected resource for a previously generated acces token. The access t
 	scope: permitted use of the resource
 }
 ```
-
-}
