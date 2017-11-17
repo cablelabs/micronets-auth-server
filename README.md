@@ -6,4 +6,9 @@ APIs that a website needs to expose for integration with IdOra and associated ex
 ### `app.get('/loginapprove')`
 
 API to request access token. If the client IS NOT IdOra, a QRC is created on the response page encoding the JSON
-`{sessionId: unique session identifier, domain: domain of endpoint used by IdOra for user authentication}`
+```javascript
+{
+	sessionId: unique session identifier,
+	domain: domain of endpoint used by IdOra for user authentication
+}
+```
