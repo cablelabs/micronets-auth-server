@@ -16,7 +16,11 @@ Request access token. If the client IS NOT IdOra, a QRC is created on the respon
 
 ### `app.post('/idoraxhr')`
 
-Long poll URL used by web apge supporting IdOra authentication
+Long poll URL used by web apge supporting IdOra authentication.
+
+### `files/authorizationServer/loginapprove.html`
+
+Auth server authentication page illustrating the XHR long poll.
 
 ### `app.post('/authsession')`
 
