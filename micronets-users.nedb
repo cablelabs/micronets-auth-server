@@ -1,0 +1,3 @@
+{"name":"bob","password":"pass","sub":"1ZT5-OE63-57383B","tokens":{"micronets":{"access_token":"aYZxa1tYnSbXPqkvyqBExmCDAJuedwnh","refresh_token":null,"scope":"authenicate_user"}},"_id":"Hq5bYPDtpEeD7CPa"}
+{"name":"alice","password":"secret","sub":"9XE3-JI34-00132A","tokens":{"micronets":{"access_token":null,"refresh_token":null,"scope":null}},"_id":"tAJyfLSHn9oLw8dM"}
+{"$$indexCreated":{"fieldName":"name","unique":true,"sparse":false}}

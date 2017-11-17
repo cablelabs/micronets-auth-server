@@ -1,0 +1,31 @@
+{
+  "name": "authresourceendpoints",
+  "version": "1.0.0",
+  "description": "OAuth2 Authorization and Resource Endpoints",
+  "main": "micronets-authorizationServer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "auth": "node micronets-authorizationServer.js",
+    "resource": "node micronets-protectedResource.js"
+  },
+  "dependencies": {
+    "base64url": "^1.0.4",
+    "body-parser": "^1.13.2",
+    "consolidate": "^0.13.1",
+    "cors": "^2.7.1",
+    "express": "^4.13.1",
+    "jsrsasign": "^5.0.0",
+    "nedb-promises": "^1.1.1",
+    "randomstring": "^1.0.7",
+    "request": "^2.58.0",
+    "request-promise": "^4.2.1",
+    "request-promise-native": "^1.0.4",
+    "simpledb": "^0.2.0",
+    "sync-request": "^2.0.1",
+    "underscore": "^1.8.3",
+    "underscore.string": "^3.1.1"
+  },
+  "devDependencies": {},
+  "author": "Bob Lund",
+  "license": "ISC"
+}

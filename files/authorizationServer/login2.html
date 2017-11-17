@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <head>
+    <title>Authorization</title>
+    <style>
+      body {
+        padding-top: 60px;
+      }
+      .navbar-inverse {
+        background-color: #322;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <span class="label label-danger"><%- serverName %> authorization server</label></a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="jumbotron">
+        <h3>Login to authorize access</h3>
+        <form method="post">
+          <p>
+            <label for="username">Username</label>
+            <input type="text" name="username">
+          </p>
+          <p>
+            <label for="password">Password</label>
+            <input type="password" name="password">
+          </p>
+          <input type="submit">
+          <input type="hidden" name="client_id" value="<%- client_id %>">
+          <input type="hidden" name="redirect_uri" value="<%- redirect_uri %>">
+          <input type="hidden" name="response_type" value="<%- response_type %>">
+          <input type="hidden" name="scope" value="<%- scope %>">
+          <input type="hidden" name="state" value="<%- state %>">
+          <input type="hidden" name="sessionId" value="<%- sessionId %>">
+        </form>
+      </div>
+      <div>
+        <img src="<%- qrcode %>">
+      </div>
+    </div>
+
+    <script>
+      var http = new XMLHttpRequest();
+      var url = "<%- path %>";
+      var params = "sessionId=<%- sessionId %>";
+      http.open("POST", url, true);
+
+      //Send the proper header information along with the request
+      http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+      http.onreadystatechange = function() {//Call a function when the state changes.
+          if(http.readyState == 4 && http.status == 200) {
+              //alert(http.responseText);
+              window.location = http.responseText;
+          }
+      }
+      http.send(params);
+    </script>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  </body>
+ </html>

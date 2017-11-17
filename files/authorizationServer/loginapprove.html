@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Micronets</title>
+
+    <!-- Bootstrap -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<style>
+	body {
+	  padding-top: 60px;
+	}
+	.navbar-inverse {
+		background-color: #322;
+	}
+	</style>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <span class="label label-danger"><%- serverName %> authorization</label></a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+
+      <div class="jumbotron">
+			  <p><code><%- client %></code> wants to use your credentials to: </p>
+			  <!--% debugger; %-->
+			   <% if (scope) { %>
+          <ul>
+            <% _.each(scope, function(s) { %>
+              <li><%- s %></li>
+            <% }); %>
+          </ul>
+        <% } %>
+        <form class="form" action="/loginapprove" method="POST">
+
+
+          <h3>Sign in to authorize access</h3>
+          <p>
+            <label for="username">Username</label>
+            <input type="text" name="username">
+          </p>
+          <p>
+            <label for="password">Password</label>
+            <input type="password" name="password">
+          </p>
+          <input type="hidden" name="sessionId" value="<%- sessionId %>">
+          <input type="hidden" name="reqid" value="<%- reqid %>">
+
+				  <input type="submit" class="btn btn-success" name="approve" value="Approve">
+				  <input type="submit" class="btn btn-danger" name="deny" value="Deny">
+			  </form>
+	     </div>
+      <div>
+        <%if(qrcode !== 'null'){%>
+          <img src="<%- qrcode %>">
+        <%}%>
+      </div>
+
+    </div><!-- /.container -->
+
+    <script>
+      var url = "<%- path %>";
+      var params = "sessionId=<%- sessionId %>";
+      if(url) {
+        var http = new XMLHttpRequest();
+        http.open("POST", url, true);
+
+        //Send the proper header information along with the request
+        http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+        http.onreadystatechange = function() {//Call a function when the state changes.
+            if(http.readyState == 4 && http.status == 200) {
+                //alert(http.responseText);
+                window.location = http.responseText;
+            }
+        }
+        http.send(params);
+      }
+    </script>	
+	
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  </body>
+</html>
