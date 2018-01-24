@@ -1,0 +1,76 @@
+<html>
+	<head>
+		<title>Home WiFi | Device Registration</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="javascripts/device-registration.js"></script>
+		<script src="javascripts/xhr.js"></script>
+		<script src="javascripts/post-robot.min.js"></script>
+		<link rel="stylesheet" href="stylesheets/style.css">
+		<link rel="stylesheet" href="stylesheets/popup.css">
+		<style>
+			html {
+				width: 100%;
+				min-width: 100%;
+			}
+			#authContainer {
+				width: 500px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+		</style>
+	</head>
+	<body onload="onLoad();">
+		<div id="authContainer">
+			<div id="banner" onclick="location.reload();"> </div>
+			<div id="instructions"><p>You have selected a device to be added to your home network. Please login below with your <span class='logo-my'>My</span><span class='logo-cable'>Cable</span> scanner application to approve this action.</p></div>
+			<div class="device" id="selectedDevice">
+				<div class="header">
+					<h3 class="dev-name"><%- type %></h3>
+				</div>
+				<div class="detail">
+					<table class="device-details">
+						<tbody>
+							<tr>
+								<td id="xxx" class="key">Provider</td>
+								<td class="val"><%- provider %></td>
+							</tr>
+							<tr>
+								<td id="xxx" class="key">Manufacturer</td>
+								<td class="val"><%- vendor %></td>
+							</tr>
+							<tr>
+								<td class="key">Model</td>
+								<td class="val"><%- model %></td>
+							</tr>
+							<tr>
+								<td class="key">SN#</td>
+								<td class="val"><%- serial %></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- TESTING ONLY -->
+			<div id="sessionId" style="display: none"><%- sessionId %></div>
+			<div id="qrcode">
+	        	<img src="<%- qrcode %>">
+	      	</div>
+
+			<div id="preloaderSpinner" class="preloader spinner">
+			    <div class="spinWrap">
+			        <p class="spinnerImage"></p>
+			        <p class="loader"></p>
+			    </div>
+			</div>
+		</div>
+
+		<div id="footer" onclick="location.reload(); /* testing */"></div>
+
+		<script>
+			longPoll("<%- sessionId %>", "<%- path %>");
+    	</script>	
+
+	</body>
+</html>
+

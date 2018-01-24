@@ -11,7 +11,6 @@ var base64url = require('base64url');
 var jose = require('jsrsasign');
 var session = require('express-session');
 
-
 var app = express();
 
 app.use(bodyParser.json());
@@ -32,7 +31,90 @@ const resourceServer = require('./config.js').servers[serverName].resource;
 // client information
 const clients = require('./config.js').clients;
 
+// TODO: Make getClient async so we can move it to a database or service endpoint in the future.
 
+// Steve's extensions
+{
+	const path = require('path');
+	const http_post = require('./lib/http_request.js').http_post;
+	const obj = require ('./lib/objUtils.js');
+
+	// Mount folder for resources (css, js, images)
+	app.use(express.static(path.join(__dirname, 'public')));
+
+	// New routes.
+
+	// Here via redirect from the clinic browser. A device has been selected, awaiting authorization
+	// from the subscriber to pair the device. Display a QRCode for them to scan.
+	app.get('/register-device', function(req, res) {
+		
+		var client = getClient(req.query.clientID);
+
+		// Fix arg mismatch. Bob's code expects _id later in /auth_session
+		req.query.client_id = req.query.clientID;
+		
+		if (!client) {
+			res.statusCode = 403;
+			res.render('error', {error: 'Unknown client'});
+			return;
+		}
+		else {
+			// Request a registration token from the mso-portal
+			// Create new post body - pass only what is required.
+			const props = ["clientID", "deviceID", "vendor", "type", "model", "serial", "macAddress"];
+			const postBody = JSON.stringify(obj.extract(req.body, props));
+			const postHeaders = {"content-type": "application/json"};
+			const uri = require('./config.js').msoPortalURI+"/portal/registration-token";
+
+			http_post(uri, postHeaders, postBody, function(error, response){
+		        //console.log("accounts - error: "+error);
+		        if (error != null || response.error != null) {
+		            let err = {};
+		            err.error = error ? error : response.error;
+		            err.status = 400;
+
+		            res.status(err.status);
+		            res.send(JSON.stringify(err, null, 2)+"\n");
+		        }
+		        else {
+		        	console.log("registration-token response: "+JSON.stringify(response));
+		        	renderLoginPage(response.registration.token);
+		        }
+		    });
+
+			function renderLoginPage(registrationToken) {
+				var reqid = randomstring.generate(8);
+				requests[reqid] = req.query;
+
+				const sessionId = randomstring.generate(8);
+				pendingLogins[sessionId] = {parms: req.query};
+
+				// Save our registration token (not physically needed in QRCode)
+				pendingLogins[sessionId].registrationToken = registrationToken;
+
+				var QRCode = require('qrcode');
+				var qrcData = {sessionId: sessionId, domain: serverName};
+
+				QRCode.toDataURL(JSON.stringify(qrcData), function (err, url) {
+
+					var templateVars = {
+						provider: client.client_name, 
+						vendor: req.query.vendor, 
+						model: req.query.model, 
+						serial: req.query.serial, 
+						type: req.query.type,
+						qrcode: url,
+						sessionId: sessionId,
+						path: '/idoraxhr'
+					}
+
+					//console.log(JSON.stringify(templateVars));
+					res.render('device-registration', templateVars);
+				});
+			}
+		}
+	});
+}
 
 const Datastore = require('nedb-promises');
 var db = {};
@@ -93,8 +175,6 @@ app.get('/', function(req, res) {
 
 var pendingLogins = {}; // idora
 
-
-
 function getAccessToken(req, res, next) {
 	// check the auth header first
 	var auth = req.headers['authorization'];
@@ -115,9 +195,9 @@ function getAccessToken(req, res, next) {
 					res.status(401).end();
 					db.tokens.remove({access_token: token.access_token, client_id: token.client_id}, {})
 						.then((num) => {
-							console.log('/getAccessToekn(): %d access tokens removed', num);
+							console.log('/getAccessToken(): %d access tokens removed', num);
 					}).catch((e) => {
-						console.log('/getAccessToekn(): error: %s', e);
+						console.log('/getAccessToken(): error: %s', e);
 					});
 					return;
 				}
@@ -126,6 +206,7 @@ function getAccessToken(req, res, next) {
 				next();
 				return;
 			} else {
+				console.log("token not found: "+inToken);
 				res.status(401).end();
 			}
 		})
@@ -140,12 +221,27 @@ app.post('/idoraxhr', function (req, res) {
 	pendingLogins[req.body.sessionId]['res'] = res;
 });
 
+/* example access token
+{
+  "access_token": "cFGxa1tYnSbXPqkvyqBExmCDAJuedtto",
+  "expires_at": 2508450996080,
+  "client_id": "idora",
+  "scope": [
+    "authenticate_user"
+  ],
+  "username": "grandma",
+  "sub": "7B2A-BE88-08817Z",
+  "_id": "MJF0I1DRaTCBAUR6"
+}
+*/
+
 // Remote login route for idora server
 
 app.post('/authsession', getAccessToken, function (req, res) {
 	var status = 204; //presume success
 	if (req.access_token) {
-		//console.log('/authsession - access_token: %s', JSON.stringify(req.access_token));
+
+		console.log('/authsession - access_token: %s', JSON.stringify(req.access_token));
 
 		if(req.body.sessionId && pendingLogins[req.body.sessionId]) {
 			console.log('/authsession - sessionId: %s',req.body.sessionId);
@@ -165,19 +261,53 @@ app.post('/authsession', getAccessToken, function (req, res) {
 			var query = pendingLogin.parms;
 			var client = getClient(query.client_id);
 			var cscope = client.scope ? client.scope.split(' ') : undefined;
-			var code = randomstring.generate(8);
-			var user = {username: req.access_token.username, sub: req.access_token.sub};
 
-			// save the code and request for later	
-			codes[code] = { request: query, scope: cscope, user: user };
+			if (__.contains(cscope, "wifi-certificate")) {
+
+				// Steve's additions - 
+				//    We don't need to return a code to be exchanged for an oauth resource token as 
+				//    we already have a registration token issued by the MSO.
+				//    Instead of returning just a redirect URI, return a JSON structure that includes
+				//    the registration token.
+
+				// Get the subscribers ssid (for UI display during pairing)
+				// TODO: /internal API needs to be restricted to requests originating from the MSO backend
+				const http_get = require('./lib/http_request.js').http_get;
+				const uri = require('./config.js').msoPortalURI+"/internal/subscriber/"+req.access_token.sub;
+
+				http_get(uri, function(error, response){
+					let returnObj = {};
+					if (error != null || response.error != null) {
+			            returnObj.error = error ? error : response.error;
+			            returnObj.status = 400;
+			            pendingLogin.res.status(returnObj.status);
+			        }
+			        else {
+						returnObj.subscriberID = response.id;
+						returnObj.ssid = response.ssid;
+						returnObj.registrationToken = pendingLogin.registrationToken;
+						returnObj.redirectURI = query.redirect_uri;
+			        }
+					pendingLogin.res.send(JSON.stringify(returnObj)).end();
+					delete pendingLogins[req.body.sessionId];
+				});
+			}
+			else {
+				// Bob's original code.
+				var code = randomstring.generate(8);
+				var user = {username: req.access_token.username, sub: req.access_token.sub};
+
+				// save the code and request for later	
+				codes[code] = { request: query, scope: cscope, user: user };
 		
-			var urlParsed = buildUrl(query.redirect_uri, {
-				code: code,
-				state: query.state
-			});
+				var urlParsed = buildUrl(query.redirect_uri, {
+					code: code,
+					state: query.state
+				});
 
-			pendingLogin.res.send(urlParsed).end();
-			delete pendingLogins[req.body.sessionId];
+				pendingLogin.res.send(urlParsed).end();
+				delete pendingLogins[req.body.sessionId];
+			}
 		} else {
 			status = 410;
 		}
@@ -722,10 +852,10 @@ var getScopesFromForm = function(body) {
 app.use('/', express.static('files/authorizationServer'));
 
 
-var server = app.listen(authServer.ipAddr.port, authServer.ipAddr.host , function () {
+var server = app.listen(authServer.ipAddr.port, function () {
   var host = server.address().address;
   var port = server.address().port;
 
-  console.log(serverName + ' OAuth Authorization Server is listening at http://%s:%s', host, port);
+  console.log(serverName + ' OAuth Authorization Server is listening on port %s', port);
 });
  

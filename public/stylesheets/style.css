@@ -1,0 +1,132 @@
+body {
+	padding: 0px;
+	margin: 0px;
+	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+	overflow: hidden;
+}
+
+#banner {
+	background: #e60000;
+	z-index: 80;
+	background: white;
+	min-height: 75px;
+	min-width: 100%;
+	margin: 0;
+	border-bottom: 1px #dfdfdf solid;
+	background-image: url(../images/MyCableLogo.png);
+	background-position: left;
+	background-repeat: no-repeat;
+}
+
+#footer {
+	position: absolute;
+	z-index: 100;
+	min-height: 35px;
+	height: 35px;
+	min-width: 100%;
+	bottom: 0px;
+	background-size: auto 65%;
+	background-color: #d4d4d4;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-image: url(../images/CableLabsFooter.png);
+	opacity: .4;
+}
+
+.visible {
+	opacity: 1;
+	transition: opacity .25s ease-in-out;
+}
+
+.invisible {
+	opacity: 0;
+	transition: opacity 1s ease-in;
+}
+
+#instructions {
+	text-align: center;
+	margin: 25px 35px;
+	font-family: Helvetica, sans-serif;
+	font-size: 16px;
+}
+
+/* Selected Device */
+.device {
+	border-radius: 10px;
+	border: 3px solid #3371b9;
+	min-width: 400px;
+	max-width: 400px;
+	height: 150px;
+	max-height: 150px;
+	background-color: white;
+	text-align: center;
+	margin-bottom: 20px;
+	background-color: #346eaa;
+	background-color: white;
+	margin: 0px auto;
+}
+
+.device .header {
+	background: #3371b9;
+	margin-top: 0;
+	padding-top: 3spx;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	height: 40px;
+	line-height: 40px;
+	white-space: nowrap;
+}
+
+div.header h3 {
+	margin-top: 0;
+	color: white;
+}
+
+div.detail {
+}
+
+table.device-details {
+	font-size: 125%;
+	margin-top: 4px;
+	margin-left: 20px;
+}
+
+table.device-details td.key {
+	text-align: right;
+	padding-left: 20px;
+	width: 40%;
+	font-weight: bold;
+}
+
+table.device-details td.val {
+	text-align: left;
+	padding-left: 20px;
+}
+
+table.device-details tr td {
+	height:22px;
+	max-height:22px;
+}
+
+/* --------------- */
+
+.logo-my, .logo-cable {
+	color: #003485;
+	font-family: "Arial Bold", sans-serif;
+	font-style: italic;
+	font-weight: bold;
+}
+
+.logo-cable {
+	color: 00a0dd;
+}
+
+#qrcode {
+	margin: 20px auto;
+}
+
+#qrcode img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}

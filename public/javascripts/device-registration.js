@@ -1,0 +1,83 @@
+var localTest = false;
+
+function onLoad() {
+	setTimeout(function(){
+		$('#preloaderSpinner').addClass("invisible");
+
+		$('#preloaderSpinner').one('transitionend', function(e){
+			$('#preloaderSpinner').css("display", "none");
+		});
+
+	},2000);
+
+	// If user switches window, abort the sequence.
+	$(window).blur(function(){
+
+		return;
+
+		// Notify parent
+		postRobot.send(window.opener, 'error', { code: 0, error: ''});
+		setTimeout(function(){
+			window.close();
+		}, 200);
+	});
+
+	$(window).unload(function(){
+		// Notify parent
+		postRobot.send(window.opener, 'error', { code: 0, error: ''});
+		setTimeout(function(){
+			return;
+		}, 200);
+	});
+
+	$('#qrcode img').on("click", function() {
+		// Fake out authsession using grandma's access token. If token is changed, fix it here.
+		var sessionId = $('#sessionId').html();
+	    var request = new XMLHttpRequest();
+	    var options = {
+	    	method: 'POST',
+	    	headers:{"authorization" : "bearer cFGxa1tYnSbXPqkvyqBExmCDAJuedtto"}};
+
+	    request.body = "sessionId="+sessionId+"&username=grandma";
+
+	    request.issue("/authsession", function(reply) {
+
+	    	if (reply.httpStatus != 204) {
+	    		postRobot.send(window.opener, 'error', { code: reply.httpStatus, error: reply.responseText});
+	    	}
+	    }, options);		
+	});
+}
+
+// Long poll for QRCode login
+/* TODO
+	- revisit when/who closes popup. We can reply to post-robot messages and popup could close itself.
+	- Add window/domain args for security.
+	- Change to be loop w/timeouts instead of onetime
+	- Transitions/modals for demo experience ("grandma approved device, click to continue")
+	- Pass subscriber info back with deviceApproved message (for display)
+	- Progress bar/timeline showing steps.
+	- Artificial delays/click to continue. Maybe use a separate long poll w/clicker? Make WiFi clicker with Pi Zero?
+*/
+function longPoll(sessionId, url) {
+
+    var request = new XMLHttpRequest();
+    var options = {method: 'POST'};
+
+    request.body = "sessionId="+sessionId;
+
+    request.issue(url, function(reply) {
+    	if (reply.error) {
+    		// XHR error. Display error page (500), dismiss button closes window.
+    		postRobot.send(window.opener, 'error', { code: 500, error: reply.error});
+    	}
+        else if (reply.httpStatus == 200) {
+        	// Set parent window success status and close window.
+    		postRobot.send(window.opener, 'deviceApproved', JSON.parse(reply.responseText));
+        }
+        else {
+        	// HTTP error. Display error page, dismiss button closes window.
+    		postRobot.send(window.opener, 'error', { code: reply.httpStatus, error: reply.responseText});
+        }
+    }, options);
+}

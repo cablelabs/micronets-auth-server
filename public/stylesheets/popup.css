@@ -1,0 +1,73 @@
+html {
+    min-width: 500px;
+    width: 500px;
+    min-height: 650px;
+    height: 650px;
+}
+.spinner {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: 10
+}
+.spinner .spinWrap {
+    width: 200px;
+    height: 100px;
+    position: fixed;
+    top: 42%;
+    left: 50%;
+    margin-left: -98px;
+    margin-top: -50px
+}
+.spinner .spinnerImage {
+    margin: 28px 0 0 -25px;
+    background: url(../images/lock.png) no-repeat;
+}
+.spinner .loader,
+.spinner .spinnerImage {
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+.spinner .loader {
+    margin: 0 0 0 -55px;
+    background-color: transparent;
+    animation: g .7s infinite linear;
+    border-left: 5px solid #cbcbca;
+    border-right: 5px solid #cbcbca;
+    border-bottom: 5px solid #cbcbca;
+    border-top: 5px solid #2380be;
+    border-radius: 100%
+}
+.spinner.preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    background-color: #fff
+}
+
+@keyframes g {
+    0% {
+        transform: rotate(0deg)
+    }
+    to {
+        transform: rotate(359deg)
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .spinner .spinWrap {
+        width: 200px;
+        height: 100px;
+        position: fixed;
+        top: 40%;
+        left: 50%;
+        margin-left: -93px;
+        margin-top: -50px
+    }
+}
