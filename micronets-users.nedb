@@ -1,0 +1,4 @@
+{"name":"bob","password":"pass","sub":"1ZT5-OE63-57383B","tokens":{"micronets":{"access_token":"aYZxa1tYnSbXPqkvyqBExmCDAJuedwnh","refresh_token":null,"scope":"authenicate_user"}},"_id":"Hq5bYPDtpEeD7CPa"}
+{"name":"grandma","password":"pass","sub":"7B2A-BE88-08817Z","tokens":{"micronets":{"access_token":"cFGxa1tYnSbXPqkvyqBExmCDAJuedtto","refresh_token":null,"scope":"authenicate_user"}},"_id":"Jr7bYPDtpEeD7FRc"}
+{"name":"alice","password":"secret","sub":"9XE3-JI34-00132A","tokens":{"micronets":{"access_token":null,"refresh_token":null,"scope":null}},"_id":"tAJyfLSHn9oLw8dM"}
+{"$$indexCreated":{"fieldName":"name","unique":true,"sparse":false}}
