@@ -1,4 +1,3 @@
-var localTest = false;
 
 function onLoad() {
 	setTimeout(function(){
@@ -31,7 +30,7 @@ function onLoad() {
 	});
 
 	$('#qrcode img').on("click", function() {
-		// Fake out authsession using grandma's access token. If token is changed, fix it here.
+		// Simulate IdOra authsession (QRCode Scan) using grandma's access token. If token is changed in auth-server, fix it here.
 		var sessionId = $('#sessionId').html();
 	    var request = new XMLHttpRequest();
 	    var options = {
@@ -40,13 +39,18 @@ function onLoad() {
 
 	    request.body = "sessionId="+sessionId+"&username=grandma";
 
-	    request.issue("/authsession", function(reply) {
+	    request.issue("/oauth2/authsession", function(reply) {
 
 	    	if (reply.httpStatus != 204) {
 	    		postRobot.send(window.opener, 'error', { code: reply.httpStatus, error: reply.responseText});
 	    	}
 	    }, options);		
 	});
+
+	// Template vars
+	var sessionId = $('#sessionId').html();
+	var uri = $('#longPollPath').html();
+	longPoll(sessionId, uri);
 }
 
 // Long poll for QRCode login
@@ -73,9 +77,16 @@ function longPoll(sessionId, url) {
     	}
         else if (reply.httpStatus == 200) {
         	// Set parent window success status and close window.
-    		postRobot.send(window.opener, 'deviceApproved', JSON.parse(reply.responseText));
+        	try {
+    			postRobot.send(window.opener, 'deviceApproved', JSON.parse(reply.responseText));	
+        	}
+        	catch(e) {
+        		console.log("Long poll error. "+e+"  responseText: "+reply.responseText);
+    			postRobot.send(window.opener, 'parseError', reply.responseText);		
+        	}
         }
         else {
+        	console.log("Failed status from server: "+reply.httpStatus+" - "+reply.responseText);
         	// HTTP error. Display error page, dismiss button closes window.
     		postRobot.send(window.opener, 'error', { code: reply.httpStatus, error: reply.responseText});
         }

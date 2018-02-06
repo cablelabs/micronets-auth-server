@@ -67,8 +67,11 @@
 
 		<div id="footer" onclick="location.reload(); /* testing */"></div>
 
+		<div id='sessionId' style='display: none'><%- sessionId %></div>
+		<div id='longPollPath' style='display: none'><%- path %></div>
+
 		<script>
-			longPoll("<%- sessionId %>", "<%- path %>");
+			//longPoll("<%- sessionId %>", "<%- path %>");
     	</script>	
 
 	</body>

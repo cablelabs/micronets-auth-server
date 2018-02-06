@@ -1,4 +1,13 @@
-# IdOra OAuth2 Authorization and Protected Resource Server Examples
+# Micronets Authorization Server (auth-server)
+
+Forked from ssh://git@code.cablelabs.com:7999/IdOra/AuthResourceEndpoints.git
+   - Original work by Bob Lund
+   - Adapted/pruned to meet specific needs of Micronets POC
+     + Removed micronets-protectedResource.js: We are using a registration token provided by the mso-portal to access
+       the device credentials.
+     + Renamed to auth-server to match other servers in project
+     + Removed obsolete code (wasn't used prior to adaptation)
+
 
 APIs that a website needs to expose for integration with IdOra and associated examples that can be changed by the website.
 

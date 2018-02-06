@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Micronets Login</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="./stylesheets/loginapprove.css">
+    <script src="./javascripts/loginapprove.js"></script>
+</head>
+<body onload="onLoad('<%- path %>','<%- sessionId %>');">
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <span class="label label-danger"><%- serverName %> authorization</label></a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+
+      <div class="jumbotron">
+    		  <p><code><%- client %></code> wants to use your credentials to: </p>
+    		  <!--% debugger; %-->
+    		   <% if (scope) { %>
+          <ul>
+            <% _.each(scope, function(s) { %>
+              <li><%- s %></li>
+            <% }); %>
+          </ul>
+        <% } %>
+        <form class="form" action="/submitloginapprove" method="POST">
+
+
+          <h3>Sign in to authorize access</h3>
+          <p>
+            <label for="username">Username</label>
+            <input type="text" name="username">
+          </p>
+          <p>
+            <label for="password">Password</label>
+            <input type="password" name="password">
+          </p>
+          <input type="hidden" name="sessionId" value="<%- sessionId %>">
+          <input type="hidden" name="reqid" value="<%- reqid %>">
+
+    			  <input type="submit" class="btn btn-success" name="approve" value="Approve">
+    			  <input type="submit" class="btn btn-danger" name="deny" value="Deny">
+    		  </form>
+         </div>
+      <div>
+        <%if(qrcode !== 'null'){%>
+          <img src="<%- qrcode %>">
+        <%}%>
+      </div>
+
+    </div><!-- /.container -->
+
+</body>
+</html>
