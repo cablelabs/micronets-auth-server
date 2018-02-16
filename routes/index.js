@@ -11,9 +11,12 @@ const config = require('../lib/config.js');
 const obj = require ('../lib/objUtils.js');
 
 // Promisified methods
-const promisify = require('es6-promisify').promisify;
-const http_post = promisify(require('../lib/http_request.js').http_post);
-const http_get = promisify(require('../lib/http_request.js').http_get);
+//const promisify = require('es6-promisify').promisify;
+
+// Use request package instead
+//const http_post = promisify(require('../lib/http_request.js').http_post);
+//const http_get = promisify(require('../lib/http_request.js').http_get);
+const request = require('request-promise');
 
 // Home
 router.get('/', function(req, res) {
@@ -42,13 +45,23 @@ router.get('/register-device', function(req, res) {
         try {
         	let client = await db.getClient(req.query.clientID);
 
-        	// Request a registration token from the mso-portal. Create new post body - pass only what is required.
-			const props = ["clientID", "deviceID", "vendor", "type", "model", "serial", "macAddress"];
-			const postHeaders = {"content-type": "application/json"};
-			const postBody = JSON.stringify(obj.extract(req.body, props));
-			const uri = config.msoPortalURI+"/portal/registration-token";
+        	console.log("query: "+JSON.stringify(req.query));
 
-			const response = await http_post(uri, postHeaders, postBody);
+        	// Request a registration token from the mso-portal. Create new post body - pass only what is required.
+        	// Construct body
+			const props = ["clientID", "deviceID", "vendor", "type", "model", "serial", "macAddress"];
+			//const postBody = JSON.stringify(obj.extract(req.query, props));
+
+			//don't need anymore with request - use json flag
+			//const postHeaders = {"content-type": "application/json"};
+
+			const uri = config.msoPortalUrl+"/portal/registration-token";
+
+			const response = await request({
+				uri: uri,
+				method: "POST",
+				json: obj.extract(req.query, props)
+			});
 
 			var reqid = randomstring.generate(8);
 			db.requests[reqid] = req.query;
@@ -65,9 +78,10 @@ router.get('/register-device', function(req, res) {
 						let returnObj = {};
 						try {
 							pendingLogin = db.pendingLogins[sessionId];
-							const uri = config.msoPortalURI+"/internal/subscriber/"+accessToken.sub;
+							const uri = config.msoPortalUrl+"/internal/subscriber/"+accessToken.sub;
 
-							let response = await http_get(uri);
+							let response = await request(uri);
+							let reply = JSON.parse(response);
 
 							if (response.error != null) {
 					            returnObj.error = response.error;
@@ -75,8 +89,8 @@ router.get('/register-device', function(req, res) {
 					            pendingLogin.res.status(returnObj.status);
 					        }
 					        else {
-								returnObj.subscriberID = response.id;
-								returnObj.ssid = response.ssid;
+								returnObj.subscriberID = reply.id;
+								returnObj.ssid = reply.ssid;
 								returnObj.registrationToken = pendingLogin.registrationToken;
 								returnObj.redirectURI = req.query.redirect_uri;
 					        }

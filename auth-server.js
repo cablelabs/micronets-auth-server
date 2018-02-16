@@ -33,7 +33,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('json spaces', 4);
 
 // Sessions
-const sessionCookie = config.server.ipAddr.port+'.connect.sid';
+const sessionCookie = config.server.port+'.connect.sid';
 app.use(session({ secret: 'secblanket', resave: true, saveUninitialized: true, name: sessionCookie, cookie: {maxAge: 2000}}));
 
 // Routes
@@ -53,4 +53,3 @@ var server = app.listen(config.server.port, function () {
 	var port = server.address().port;
 	console.log('Micronets Authorization Server is listening on port %s', port);
 });
-

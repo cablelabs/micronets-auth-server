@@ -16,10 +16,6 @@ const db = require('../lib/auth-db.js');
 const config = require('../lib/config.js');
 const auth = require('../lib/auth.js');
 
-// Promisified methods
-const promisify = require('es6-promisify').promisify;
-const http_get = promisify(require('../lib/http_request.js').http_get);
-
 // OAUTH redirect for subscriber to approve application access to account using access token.
 router.get("/authorize", function(req, res){
 	(async () => {
@@ -32,13 +28,14 @@ router.get("/authorize", function(req, res){
 			else {
 				var cscope = client.scope ? client.scope.split(' ') : undefined;		
 				var reqid = randomstring.generate(8);
-				requests[reqid] = req.query;
+				db.requests[reqid] = req.query;
 
 				// redirect from idora portal (user is preauthorizing user for future QRCode remote logins)
 				res.render('authorize', {client: client.client_id, reqid: reqid, scope: cscope});
 			}
         } catch (e) {
-        	res.render('error', {error: 'e'});
+        	console.log("/authorize error: "+e);
+        	res.render('error', {error: e});
         }    
     })();
 });
@@ -49,7 +46,7 @@ router.post('/submitauthorize', function(req, res) {
 
 	(async () => {
         try {
-        	var query = requests[req.body.reqid];
+        	var query = db.requests[req.body.reqid];
 
 			if (!query) {
 				throw "invalid_request";
@@ -73,7 +70,7 @@ router.post('/submitauthorize', function(req, res) {
 			const user = {username: req.body.username, sub: loginToken};
 			
 			// save the code and request for later					
-			codes[code] = { request: query, scope: cscope, user: user };
+			db.codes[code] = { request: query, scope: cscope, user: user };
 		
 			res.redirect(auth.buildUrl(query.redirect_uri, {
 				code: code,
@@ -97,7 +94,7 @@ router.post("/token", function(req, res) {
 
 	(async () => {
         try {
-        	// check the auth header
+        	// Authorization
 			if (req.headers.authorization) {
 				const clientCredentials = auth.decodeClientCredentials(req.headers.authorization);
 				clientId = clientCredentials.id;
@@ -108,6 +105,7 @@ router.post("/token", function(req, res) {
 				clientSecret = req.body.client_secret;
 			}
 
+			// Client
 			let client = await db.getClient(clientId);
 			if (!client) {
 				throw "invalid client";
@@ -116,15 +114,16 @@ router.post("/token", function(req, res) {
 				throw "invalid_client_secret";
 			}
 
+			// Grant type
 			if (req.body.grant_type == 'authorization_code') {
 		
-				var code = codes[req.body.code];
+				var code = db.codes[req.body.code];
 				if (!code) {
 					console.log("unknown grant code");
 					throw "invalid_grant";
 				}
 
-				delete codes[req.body.code]; // burn our code, it's been used
+				delete db.codes[req.body.code]; // burn our code, it's been used
 
 				if (code.request.client_id != clientId) {
 					console.log("client mismatch");
@@ -140,7 +139,7 @@ router.post("/token", function(req, res) {
 					sub: code.user.sub
 				};
 
-				let access_token = await db.tokens.insert();
+				let access_token = await db.tokens.insert(token);
 					
 				let token_response = {
 					access_token: access_token.access_token,
@@ -278,7 +277,7 @@ router.post('/authsession', auth.getAccessToken, function (req, res) {
 				var user = {username: req.access_token.username, sub: req.access_token.sub};
 
 				// save the code and request for later	
-				codes[code] = { request: query, scope: cscope, user: user };
+				db.codes[code] = { request: query, scope: cscope, user: user };
 		
 				var urlParsed = auth.buildUrl(query.redirect_uri, {
 					code: code,

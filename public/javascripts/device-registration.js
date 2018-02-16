@@ -1,3 +1,5 @@
+// Must match route in routes/index.js
+let baseURL = location.href.substring(0,location.href.indexOf('/register-device'));
 
 function onLoad() {
 	setTimeout(function(){
@@ -29,17 +31,18 @@ function onLoad() {
 		}, 200);
 	});
 
+	// TESTING ONLY!
 	$('#qrcode img').on("click", function() {
-		// Simulate IdOra authsession (QRCode Scan) using grandma's access token. If token is changed in auth-server, fix it here.
+		// Simulate IdOra authsession (QRCode Scan) using special grandma's access token.
 		var sessionId = $('#sessionId').html();
 	    var request = new XMLHttpRequest();
 	    var options = {
 	    	method: 'POST',
-	    	headers:{"authorization" : "bearer cFGxa1tYnSbXPqkvyqBExmCDAJuedtto"}};
+	    	headers:{"authorization" : "bearer grandma-super-secret-access-token"}};
 
 	    request.body = "sessionId="+sessionId+"&username=grandma";
 
-	    request.issue("/oauth2/authsession", function(reply) {
+	    request.issue(baseURL+"/oauth2/authsession", function(reply) {
 
 	    	if (reply.httpStatus != 204) {
 	    		postRobot.send(window.opener, 'error', { code: reply.httpStatus, error: reply.responseText});
@@ -70,7 +73,7 @@ function longPoll(sessionId, url) {
 
     request.body = "sessionId="+sessionId;
 
-    request.issue(url, function(reply) {
+    request.issue(baseURL+url, function(reply) {
     	if (reply.error) {
     		// XHR error. Display error page (500), dismiss button closes window.
     		postRobot.send(window.opener, 'error', { code: 500, error: reply.error});
