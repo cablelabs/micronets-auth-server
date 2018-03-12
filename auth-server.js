@@ -18,6 +18,14 @@ var logger = require('morgan');
 // Log level
 app.use(logger('dev'));
 
+var env = process.env;
+
+//Object.keys(env).forEach(function(key) {
+//  console.log('export ' + key + '="' + env[key] +'"');
+//});
+
+console.log("env PORT: "+process.env.PORT);
+
 // Local modules
 const config = require('./lib/config.js');
 
@@ -48,7 +56,7 @@ process.on('unhandledException', error => {
 });
 
 // Start Server
-var server = app.listen(config.server.port, function () {
+var server = app.listen(process.env.PORT || config.server.port, function () {
 	var host = server.address().address;
 	var port = server.address().port;
 	console.log('Micronets Authorization Server is listening on port %s', port);

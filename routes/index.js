@@ -55,7 +55,7 @@ router.get('/register-device', function(req, res) {
 			//don't need anymore with request - use json flag
 			//const postHeaders = {"content-type": "application/json"};
 
-			const uri = config.msoPortalUrl+"/portal/registration-token";
+			const uri = config.msoPortalUrl+"/portal/registration/token";
 
 			const response = await request({
 				uri: uri,
@@ -70,7 +70,7 @@ router.get('/register-device', function(req, res) {
 
 			db.pendingLogins[sessionId] = {
 				parms: req.query,
-				registrationToken: response.registration.token,
+				registrationToken: response.accessToken,
 				// Each endpoint that can be remotely logged in (eg. /register_device via IdOra) will likely require a specific
 				// response, eg. a redirect URL or a JSON structure. This callback is invoked by authsession().
 				generateResponse: function(sessionId, accessToken) {
