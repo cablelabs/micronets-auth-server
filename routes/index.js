@@ -49,7 +49,7 @@ router.get('/register-device', function(req, res) {
 
         	// Request a registration token from the mso-portal. Create new post body - pass only what is required.
         	// Construct body
-			const props = ["clientID", "deviceID", "vendor", "type", "model", "serial", "macAddress"];
+			const props = ["clientID", "deviceID", "vendor", "type", "model", "serial", "macAddress", "class"];
 			//const postBody = JSON.stringify(obj.extract(req.query, props));
 
 			//don't need anymore with request - use json flag

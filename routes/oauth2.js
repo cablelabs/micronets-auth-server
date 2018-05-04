@@ -199,7 +199,7 @@ router.post("/token", function(req, res) {
 				await db.tokens.insert(token_insert);
 
 				console.log('\n\nRefresh_token\nIssuing access token: %s\n%s\n\n', clientId, JSON.stringify(token_response));
-				res.status(200).json(promiseResults[0]);
+				res.status(200).json(token_response);
 			} 
 			else {
 				console.log('Unknown grant type %s', req.body.grant_type);
@@ -305,6 +305,55 @@ router.post('/authsession', auth.getAccessToken, function (req, res) {
         	console.log("authsession error: "+ JSON.stringify(e));
         } 
 	})();
+});
+
+router.post('/revoke', function(req, res) {
+
+
+	let clientId, clientSecret;
+
+	(async () => {
+        try {
+        	// Authorization
+			if (req.headers.authorization) {
+				const clientCredentials = auth.decodeClientCredentials(req.headers.authorization);
+				clientId = clientCredentials.id;
+				clientSecret = clientCredentials.secret;
+			}
+			else if (req.body.client_id) {
+				clientId = req.body.client_id;
+				clientSecret = req.body.client_secret;
+			}
+
+			// Client
+			let client = await db.getClient(clientId);
+			if (!client) {
+				throw "invalid client";
+			}
+			else if (client.client_secret != clientSecret) {
+				throw "invalid_client_secret";
+			}
+
+			const access_token = { 
+				access_token: req.body.access_token ? req.body.access_token : "", 
+				client_id: clientId 			
+			};
+
+			const refresh_token = { 
+				refresh_token: req.body.refresh_token ? req.body.refresh_token : "", 
+				client_id: clientId			
+			};
+
+			await db.tokens.remove(access_token);
+			await db.tokens.remove(refresh_token);
+			res.status(204).end();
+
+    	} catch (e) {
+			console.log(e);
+			res.status(401).json({error: e});
+			return;
+        } 
+    })();
 });
 
 module.exports = router;
