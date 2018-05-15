@@ -21,7 +21,9 @@ router.get("/authorize", function(req, res){
 	(async () => {
         try {
 			var client = await db.getClient(req.query.client_id);
-			if (!__.contains(client.redirect_uris, req.query.redirect_uri)) {
+			// TODO: Fix this, for now allow any redirect uris
+			//if (!__.contains(client.redirect_uris, req.query.redirect_uri)) {
+			if (false) {
 				console.log('Mismatched redirect URI, expected %s got %s', client.redirect_uris, req.query.redirect_uri);
 				throw 'Invalid redirect URI';
 			} 
@@ -129,7 +131,7 @@ router.post("/token", function(req, res) {
 					console.log("client mismatch");
 					throw "invalid_grant";
 				}
-				const expires_in = 60*60*24; //24 hours
+				const expires_in = 60*60*24*365; //1 year
 				const token = {
 					access_token: randomstring.generate(), 
 					expires_at: new Date().getTime()+1000*expires_in,
@@ -179,7 +181,7 @@ router.post("/token", function(req, res) {
 				} 
 
 				var access_token = randomstring.generate();
-				const expires_in = 60*60*24; //24 hours
+				const expires_in = 60*60*24*365; //1 year
 
 				const token_response = {
 					access_token: access_token, 

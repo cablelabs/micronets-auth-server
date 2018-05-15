@@ -55,7 +55,7 @@ router.get('/register-device', function(req, res) {
 			//don't need anymore with request - use json flag
 			//const postHeaders = {"content-type": "application/json"};
 
-			const uri = config.msoPortalUrl+"portal/registration/token";
+			const uri = config.msoPortalUrl+"/portal/registration/token";
 
 			console.log("portal url: "+uri);
 
@@ -80,7 +80,7 @@ router.get('/register-device', function(req, res) {
 						let returnObj = {};
 						try {
 							pendingLogin = db.pendingLogins[sessionId];
-							const uri = config.msoPortalUrl+"internal/subscriber/"+accessToken.sub;
+							const uri = config.msoPortalUrl+"/internal/subscriber/"+accessToken.sub;
 
 							console.log("subscriber URI: "+uri);
 
