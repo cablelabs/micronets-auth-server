@@ -65,9 +65,4 @@ Return a protected resource for a previously generated acces token. The access t
 }
 ```
 
-## TODO
-
-* Get rid of unused code
-* Add a ladder diagram showing protocol
-* Add comments for each route describing inputs and responses
 

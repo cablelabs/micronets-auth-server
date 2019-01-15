@@ -1,12 +1,13 @@
 {
-  "name": "auth-server",
+  "name": "micronets-auth-server",
   "version": "1.0.0",
   "private": true,
   "description": "Micronets Authorization Server",
+  "repository": "https://github.com/cablelabs/micronets-auth-server",
   "scripts": {
     "start": "node ./auth-server",
-    "docker-build": "docker build -t code.cablelabs.com:4567/micronets/auth-server .",
-    "docker-publish": "docker login code.cablelabs.com:4567; docker push code.cablelabs.com:4567/micronets/auth-server"
+    "docker-build": "docker build -t community.cablelabs.com:4567/micronets-docker/micronets-auth-server .",
+    "docker-publish": "docker login community.cablelabs.com:4567; docker push community.cablelabs.com:4567/micronets-docker/micronets-auth-server"
   },
   "dependencies": {
     "base64url": "^1.0.4",
