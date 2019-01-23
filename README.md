@@ -229,7 +229,7 @@ POST data:
 Long poll for subscriber login is returned 200 OK
 Response for `/authsession` is returned 200 OK
 
-## Build/Publish Instructions
+## Build
 Edit `package.json` to be sure the docker remote registry URL is correct for the `docker_publish` script
 
 ```  "scripts": {
@@ -244,7 +244,7 @@ Install packages, build and publish:
   npm run docker_build
   npm run docker_publish
 ```
-## Deploy Instructions
+## Deploy
 The Micronets Authorization Server is deployed as a docker container.
 Docker deployment instructions can be found [here](https://github.com/cablelabs/micronets/wiki/Docker-Deployment-Guide)
 
