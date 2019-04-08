@@ -45,8 +45,11 @@ const sessionCookie = config.server.port+'.connect.sid';
 app.use(session({ secret: 'secblanket', resave: true, saveUninitialized: true, name: sessionCookie, cookie: {maxAge: 2000}}));
 
 // Routes
+// Web UI, no versioning
 app.use('/', require('./routes/index'));
-app.use('/oauth2', require('./routes/oauth2'));
+
+// API, use versioning
+app.use('/oauth2/v1/', require('./routes/oauth2'));
 
 // Last chance exception handler
 process.on('unhandledException', error => {

@@ -75,7 +75,7 @@ router.get('/register-device', function(req, res) {
 						let returnObj = {};
 						try {
 							pendingLogin = db.pendingLogins[sessionId];
-							const uri = config.msoPortalUrl+"/internal/subscriber/"+accessToken.sub;
+							const uri = config.msoPortalUrl+"/portal/v1/subscriber/"+accessToken.sub;
 
 							console.log("subscriber URI: "+uri);
 
