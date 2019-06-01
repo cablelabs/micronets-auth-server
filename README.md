@@ -7,17 +7,17 @@ Migrated from ssh://git@code.cablelabs.com:7999/IdOra/AuthResourceEndpoints.git
        the device credentials.
      + Renamed to micronets-auth-server to match other modules in the micronets project
      + Removed obsolete code (wasn't used prior to adaptation)
-     + Removed non-micronets specific code for resource tokens. 
+     + Removed non-micronets specific code for resource tokens.
 
 ## API
 
 The exposed API is separated into two routes:
 * `/` Browser based endpoints
-* `/oauth2/` OAUTH token management
+* `/oauth2/v1/` OAUTH token management
 
 ### Register Device:
 
-* The device metadata has been forwarded via redirect from the Registration Server. 
+* The device metadata has been forwarded via redirect from the Registration Server.
 * A registration token is obtained from the MSO Portal
 * A webpage is displayed that contains the device metadata and a QRCode for the subscriber to scan
 * A long poll `/idorahxr` is established by the webpage javascript, waiting for remote login via QRCode
@@ -89,7 +89,7 @@ POST data:
 ```
 
 #### response:
-If remote login succeeds, a 200 OK is returned. 
+If remote login succeeds, a 200 OK is returned.
 
 
 ### OAUTH Authorize:
@@ -100,7 +100,7 @@ Origin: Redirect from Idora Server
 
 Method: GET
 
-#### url: `/oauth2/authorize`
+#### url: `/oauth2/v1/authorize`
 
 Header Fields:
 (none)
@@ -119,11 +119,11 @@ Query Params:
 ### Submit Authorization:
 * A username/password is submitted for authentication
 
-Origin: Form submission from `/authorize` page
+Origin: Form submission from `/v1/authorize` page
 
 Method: POST
 
-#### url: `/oauth2/submitauthorize`
+#### url: `/oauth2/v1/submitauthorize`
 
 Header Fields:
 (none)
@@ -150,12 +150,12 @@ Origin: IdOra Server
 
 Method: POST
 
-#### url: `/oauth2/token`
+#### url: `/oauth2/v1/token`
 
 Header Fields:
 ```authorization: (basic, containing IdOra clientID and client secret)
 ```
-(Note: alternatively, clientID and client secret can be passed in POST body) 
+(Note: alternatively, clientID and client secret can be passed in POST body)
 
 POST data:
 
@@ -181,7 +181,7 @@ Origin: IdOra Server
 
 Method: POST
 
-#### url: `/oauth2/authsession`
+#### url: `/oauth2/v1/authsession`
 
 Header Fields:
 ```authorization: (bearer, containing subscriber access token)
@@ -197,7 +197,7 @@ POST data:
 
 #### response:
 Long poll for subscriber login is returned 200 OK
-Response for `/authsession` is returned 200 OK
+Response for `/v1/authsession` is returned 200 OK
 
 
 ### Revoke:
@@ -207,7 +207,7 @@ Origin: IdOra Server
 
 Method: POST
 
-#### url: `/oauth2/revoke`
+#### url: `/oauth2/v1/revoke`
 
 Header Fields:
 ```authorization: (basic, containing IdOra clientID and client secret)
@@ -215,7 +215,7 @@ Header Fields:
 POST data:
 
 ```
- 
+
   {
     "client_id": "52525252555252525252",   # Only if not passed in authorization header
     "client_secret": "IdOra Server Secret",   # Only if not passed in authorization header
@@ -227,7 +227,7 @@ POST data:
 
 #### response:
 Long poll for subscriber login is returned 200 OK
-Response for `/authsession` is returned 200 OK
+Response for `/v1/authsession` is returned 200 OK
 
 ## Build
 Edit `package.json` to be sure the docker remote registry URL is correct for the `docker_publish` script
@@ -251,7 +251,7 @@ Docker deployment instructions can be found [here](https://github.com/cablelabs/
 The environment variables to be passed to the authorization server are:
 ```
    -e auth_server_url=<url>  # our public URL
-   -e mso_portal_url=<url> 
+   -e mso_portal_url=<url>
    -e idora_server_url=<url>
    -e reg_server_url=<url>
    -e PORT=3020              # port to listen on

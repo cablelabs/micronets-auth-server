@@ -1,7 +1,7 @@
 FROM node:8
 
 # Development packages
-RUN apt-get update; apt-get --assume-yes install vim
+# RUN apt-get update; apt-get --assume-yes install vim
 
 # Create app directory
 WORKDIR /usr/src/app

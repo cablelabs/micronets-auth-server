@@ -50,7 +50,7 @@ router.get('/register-device', function(req, res) {
         	// Request a registration token from the mso-portal. Create new post body - pass only what is required.
         	// Construct body
 			const props = ["clientID", "deviceID", "vendor", "type", "model", "serial", "macAddress", "class", "deviceName", "deviceConnection", "modelUID64", "mudURL"];
-			const uri = config.msoPortalUrl+"/portal/registration/token";
+			const uri = config.msoPortalUrl+"/portal/v1/registration/token";
 
 			console.log("portal url: "+uri);
 
@@ -75,7 +75,7 @@ router.get('/register-device', function(req, res) {
 						let returnObj = {};
 						try {
 							pendingLogin = db.pendingLogins[sessionId];
-							const uri = config.msoPortalUrl+"/internal/subscriber/"+accessToken.sub;
+							const uri = config.msoPortalUrl+"/portal/v1/subscriber/"+accessToken.sub;
 
 							console.log("subscriber URI: "+uri);
 

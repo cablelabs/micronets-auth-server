@@ -42,7 +42,7 @@ function onLoad() {
 
 	    request.body = "sessionId="+sessionId+"&username=grandma";
 
-	    request.issue(baseURL+"/oauth2/authsession", function(reply) {
+	    request.issue(baseURL+"/oauth2/v1/authsession", function(reply) {
 
 	    	if (reply.httpStatus != 204) {
 	    		postRobot.send(window.opener, 'error', { code: reply.httpStatus, error: reply.responseText});
