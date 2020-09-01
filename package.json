@@ -10,7 +10,7 @@
     "docker-publish": "docker login community.cablelabs.com:4567; docker push community.cablelabs.com:4567/micronets-docker/micronets-auth-server"
   },
   "dependencies": {
-    "base64url": "^1.0.4",
+    "base64url": "^3.0.0",
     "body-parser": "^1.13.2",
     "consolidate": "^0.13.1",
     "express": "^4.13.1",
