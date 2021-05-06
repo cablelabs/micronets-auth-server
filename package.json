@@ -21,7 +21,7 @@
     "randomstring": "^1.0.7",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
-    "underscore": "^1.8.3",
+    "underscore": "^1.12.1",
     "underscore.string": "^3.1.1"
   },
   "author": "Bob Lund/adapted to Micronets by Steve Johnson",
